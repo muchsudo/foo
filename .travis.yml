@@ -1,0 +1,42 @@
+os: linux
+dist: bionic
+language: c
+
+services:
+  - docker
+
+addons:
+ snaps:
+   - name: aws-cli
+     confinement: classic
+
+env:
+  global:
+    - VERSION="build-$TRAVIS_BUILD_NUMBER"
+  matrix:
+    - UBUNTU=16.04
+    - UBUNTU=18.04
+
+stages:
+  - build
+  - integration
+  - name: release
+    if: branch = master
+
+jobs:
+  include:
+    - stage: build
+      name: "Build and Unit Test"
+      script:
+        - make --no-builtin-rules build
+        - make --no-builtin-rules units
+      after_success:
+        - make --no-builtin-rules publish
+    - stage: integration
+      name: "Integration Tests"
+      script:
+        - make --no-builtin-rules integration
+    - stage: release
+      name: "Release"
+      script:
+        - VERSION=latest make --no-builtin-rules release
