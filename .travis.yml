@@ -6,9 +6,12 @@ services:
   - docker
 
 addons:
- snaps:
-   - name: aws-cli
-     confinement: classic
+  snaps:
+    - name: jq
+    - name: aws-cli
+      confinement: classic
+    - name: heroku
+      confinement: classic
 
 env:
   global:
